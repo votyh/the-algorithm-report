@@ -1,22 +1,45 @@
-import os, requests, random, datetime
+import openai
+import datetime
+import os
+from pathlib import Path
 
-# ✅ Setup
-topics = ["AI", "Technology", "Science", "Startups", "Future Trends", "Robotics", "Space Exploration"]
-today = datetime.datetime.now().strftime("%Y-%m-%d")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def generate_post():
-    topic = random.choice(topics)
-    title = f"Latest {topic} Update - {today}"
-    content = f"This report covers the newest developments in {topic.lower()} as of {today}. Stay tuned for future insights."
-    return title, content
+# Directory setup
+output_dir = Path("posts")
+output_dir.mkdir(exist_ok=True)
 
-def save_post(title, content):
-    os.makedirs("content", exist_ok=True)
-    filename = f"content/{title.replace(' ', '_')}.md"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(f"# {title}\n\n{content}\n")
+today = datetime.date.today().isoformat()
 
-if __name__ == "__main__":
-    title, content = generate_post()
-    save_post(title, content)
-    print(f"✅ Generated post: {title}")
+topics = [
+    "AI & Machine Learning",
+    "Technology & Innovation",
+    "Business & Finance",
+    "World Economy & Global Affairs"
+]
+
+def generate_report(topic):
+    prompt = f"Write a short, factual and professional 2025 news summary (120–160 words) about the latest developments in {topic}. Use a formal and journalistic tone, suitable for a technology publication called The Algorithm Report."
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.choices[0].message["content"]
+
+content = f"# The Algorithm Report — {today}\n\n"
+content += "This edition covers key developments across AI, technology, business, and global affairs.\n\n"
+
+for topic in topics:
+    try:
+        article = generate_report(topic)
+        content += f"## {topic}\n\n{article}\n\n"
+    except Exception as e:
+        content += f"## {topic}\n\nError generating content: {e}\n\n"
+
+# Save the report
+file_path = output_dir / f"report_{today}.md"
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print(f"✅ Generated report saved to {file_path}")
+
