@@ -6,7 +6,7 @@ from pathlib import Path
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Directory setup
-output_dir = Path("posts")
+output_dir = Path("content")
 output_dir.mkdir(exist_ok=True)
 
 today = datetime.date.today().isoformat()
