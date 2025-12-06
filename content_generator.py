@@ -20,10 +20,10 @@ topics = [
 
 def generate_report(topic):
     prompt = f"Write a short, factual and professional 2025 news summary (120–160 words) about the latest developments in {topic}. Use a formal and journalistic tone, suitable for a technology publication called The Algorithm Report."
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-    )
+  response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": prompt}],
+)
     return response.choices[0].message["content"]
 
 content = f"# The Algorithm Report — {today}\n\n"
